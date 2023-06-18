@@ -2,7 +2,11 @@ module github.com/Thalerngsak/restaurant
 
 go 1.20
 
-require github.com/gin-gonic/gin v1.9.1
+require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/gin-gonic/gin v1.9.1
+	github.com/joho/godotenv v1.5.1
+)
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
