@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Thalerngsak/restaurant/model"
 	"github.com/gin-gonic/gin"
+	"math"
 	"net/http"
 	"sync"
 )
@@ -152,9 +153,7 @@ func CancelReservation(c *gin.Context) {
 		return
 	}
 
-	var req struct {
-		BookingID int `json:"bookingID"`
-	}
+	var req = model.CancelRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.APIResponse{
 			Success: false,
@@ -188,18 +187,21 @@ func CancelReservation(c *gin.Context) {
 }
 
 func findAvailableTables(restaurant *model.Restaurant, numCustomers int) ([]int, error) {
+
 	var tableIDs []int
-	// Iterate through the tables and find the available ones
+	seatsPerTable := 4
+	numberOfTable := int(math.Ceil(float64(numCustomers) / float64(seatsPerTable)))
+
 	for _, table := range restaurant.Tables {
 		if !table.IsReserved {
 			tableIDs = append(tableIDs, table.ID)
-			if len(tableIDs) >= numCustomers {
+			if len(tableIDs) >= numberOfTable {
 				break
 			}
 		}
 	}
 
-	if len(tableIDs) < numCustomers {
+	if len(tableIDs) < numberOfTable {
 		return nil, errors.New("Not enough tables for the reservation")
 	}
 
@@ -216,6 +218,7 @@ func findReservationByID(restaurant *model.Restaurant, bookingID int) (*model.Re
 }
 
 func removeReservationByID(reservations []*model.Reservation, bookingID int) []*model.Reservation {
+
 	for i, reservation := range reservations {
 		if reservation.ID == bookingID {
 			return append(reservations[:i], reservations[i+1:]...)
@@ -225,7 +228,7 @@ func removeReservationByID(reservations []*model.Reservation, bookingID int) []*
 }
 
 func getRestaurant() *model.Restaurant {
-	// Create the restaurant if it doesn't exist
+
 	if restaurant == nil {
 		restaurant = &model.Restaurant{
 			Tables:       []*model.Table{},

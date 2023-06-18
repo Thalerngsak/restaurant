@@ -26,6 +26,9 @@ type InitializeRequest struct {
 type ReserveRequest struct {
 	NumCustomers int `json:"numCustomers"`
 }
+type CancelRequest struct {
+	BookingID int `json:"bookingID"`
+}
 type APIResponse struct {
 	Success bool        `json:"success"`
 	Message string      `json:"message,omitempty"`
